@@ -16,10 +16,11 @@ func init() {
 	m.clients = make(map[string]*Client)
 }
 
-func NewClient(id string, conn Conn, onNewClient func(c *Client), timeout ...time.Duration) *Client {
+func NewClient(id string, conn Conn, listener Listener, timeout ...time.Duration) (*Client, bool) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	var c *Client
+	var isNew bool
 	if c = m.clients[id]; c != nil {
 		c.reset(conn)
 	} else {
@@ -30,13 +31,12 @@ func NewClient(id string, conn Conn, onNewClient func(c *Client), timeout ...tim
 			t = time.Minute
 		}
 		c = newClient(id, conn, t)
+		c.setListener(listener)
 		go c.ping(c.hb)
 		m.clients[id] = c
-		if onNewClient != nil {
-			onNewClient(c)
-		}
+		isNew = true
 	}
-	return c
+	return c, isNew
 }
 
 func GetClient(id string) (*Client, error) {

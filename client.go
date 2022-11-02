@@ -17,13 +17,13 @@ type Client struct {
 }
 
 func (c *Client) ping(hb chan struct{}) {
-	c.listener.OnConnected(c.id)
-	defer c.listener.OnDisconnected(c.id)
+	c.listener.OnConnected(c)
+	defer c.listener.OnDisconnected(c)
 	for {
 		select {
 		case <-hb:
 		case <-time.After(c.timeout):
-			c.listener.OnRemove(c.id)
+			c.listener.OnRemove(c)
 			remove(c.id)
 			return
 		}
@@ -37,7 +37,7 @@ func (c *Client) receive(conn Conn, hb chan struct{}) {
 		if err != nil {
 			return
 		} else {
-			c.listener.OnMessage(c.id, data)
+			c.listener.OnMessage(c, data)
 			hb <- struct{}{}
 		}
 	}
@@ -51,14 +51,15 @@ func (c *Client) reset(conn Conn) {
 	}
 	c.closed = false
 	c.conn = conn
-	c.listener.OnReconnected(c.id)
+	c.listener.OnReconnected(c)
 }
 
-func (c *Client) SetListener(listener Listener) {
-	if c.listener == listener {
-		return
-	}
+func (c *Client) setListener(listener Listener) {
 	c.listener = listener
+}
+
+func (c *Client) ID() string {
+	return c.id
 }
 
 func (c *Client) Write(data []byte) error {
