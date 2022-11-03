@@ -1,8 +1,8 @@
 package example
 
 import (
-	"github.com/cr0z/connutil"
-	"github.com/cr0z/connutil/wsutil"
+	"github.com/cro4k/connutil"
+	"github.com/cro4k/connutil/wsutil"
 	"golang.org/x/net/websocket"
 	"log"
 	"net/http"

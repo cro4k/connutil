@@ -1,4 +1,4 @@
-module github.com/cr0z/connutil
+module github.com/cro4k/connutil
 
 go 1.17
 
