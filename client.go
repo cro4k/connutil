@@ -14,6 +14,8 @@ type Client struct {
 	timeout time.Duration
 
 	listener Listener
+
+	binding interface{}
 }
 
 func (c *Client) ping(hb chan struct{}) {
@@ -71,6 +73,14 @@ func (c *Client) Write(data []byte) error {
 
 func (c *Client) Run() {
 	c.receive(c.conn, c.hb)
+}
+
+func (c *Client) Bind(binding interface{}) {
+	c.binding = binding
+}
+
+func (c *Client) GetBinding() interface{} {
+	return c.binding
 }
 
 func newClient(id string, conn Conn, timeout time.Duration) *Client {
