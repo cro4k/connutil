@@ -16,6 +16,12 @@ func init() {
 	m.clients = make(map[string]*Client)
 }
 
+func remove(id string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	delete(m.clients, id)
+}
+
 func NewClient(id string, conn Conn, listener Listener, timeout ...time.Duration) (*Client, bool) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -48,10 +54,12 @@ func GetClient(id string) (*Client, error) {
 	return nil, errors.New("not found")
 }
 
-func remove(id string) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	delete(m.clients, id)
+func WriteTo(id string, data []byte) error {
+	c, err := GetClient(id)
+	if err != nil {
+		return err
+	}
+	return c.Write(data)
 }
 
 func Count() int {
