@@ -31,9 +31,15 @@ func TestPool(t *testing.T) {
 	p := NewPool()
 	conn1 := &IDConn{id: "111"}
 	conn2 := &IDConn{id: "222"}
-
+	t.Log(len(p.runners))
 	p.Join("1", conn1, onMessage, time.Second*5)
 	time.Sleep(time.Second * 5)
+	t.Log(len(p.runners))
 	p.Join("1", conn2, onMessage, time.Second*5)
 	time.Sleep(time.Second * 5)
+	p.Shutdown("1")
+	time.Sleep(time.Second)
+	t.Log(len(p.runners))
+	time.Sleep(time.Second * 5)
+	t.Log(len(p.runners))
 }
